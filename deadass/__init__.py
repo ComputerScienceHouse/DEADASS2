@@ -44,14 +44,8 @@ auth = OIDCAuthentication({'default': CSH_AUTH},
 
 auth.init_app(app)
 
-# Flask-Login Manager
-#login_manager = LoginManager()
-#login_manager.init_app(app)
-#login_manager.login_view = 'csh_auth'
-
 # Commit
-#commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').rstrip()
-commit = 'bingus'
+commit = check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8').rstrip()
 
 # pylint: disable=wrong-import-position
 from .models import Database
@@ -105,7 +99,7 @@ def create_db(user_dict=None):
         elif db_type == 'MYSQL':
             with mysql_db.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
                 with connection.begin():
-                    user_text = text(f"CREATE USER :name@'%' IDENTIFIED BY :password;")
+                    user_text = text("CREATE USER :name@'%' IDENTIFIED BY :password;")
                     perm_text = text(f"GRANT ALL ON {name}.* TO :name@'%';")
                     connection.execute(user_text, name=name, password=password)
                     connection.execute(f"CREATE DATABASE {name};")
