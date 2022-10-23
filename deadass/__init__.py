@@ -85,26 +85,36 @@ def create_db(user_dict=None):
         name = form.name.data
         if not name.isalnum():
             abort(400)
-        new_db = Database(db_type, name, user_dict['username'])
-        with Session(deadass_db) as session:
-            session.add(new_db)
-            session.commit()
         password = get_haddock_password();
         if db_type == 'POSTGRES':
             with postgres_db.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
                 with connection.begin():
+                    db_check = text("SELECT COUNT(1) FROM pg_catalog.pg_database WHERE datname=:name")
+                    if connection.execute(db_check, name=name).scalar_one() > 0:
+                        abort(400)
+                    user_check = text("SELECT COUNT(1) FROM pg_roles WHERE rolname=:name")
+                    if connection.execute(user_check, name=name).scalar_one() > 0:
+                        abort(400)
                     user_text = text(f"CREATE USER {name} WITH PASSWORD :password;")
                     connection.execute(user_text, password=password)
                     connection.execute(f"CREATE DATABASE {name} OWNER {name};")
         elif db_type == 'MYSQL':
             with mysql_db.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
                 with connection.begin():
+                    db_check = text("SELECT COUNT(1) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = :name")
+                    if connection.execute(db_check, name=name).scalar_one() > 0:
+                        abort(400)
+                    user_check = text("SELECT COUNT(1) FROM mysql.user WHERE user = :name")
+                    if connection.execute(user_check, name=name).scalar_one() > 0:
+                        abort(400)
                     user_text = text("CREATE USER :name@'%' IDENTIFIED BY :password;")
                     perm_text = text(f"GRANT ALL ON {name}.* TO :name@'%';")
                     connection.execute(user_text, name=name, password=password)
                     connection.execute(f"CREATE DATABASE {name};")
                     connection.execute(perm_text, name=name)
         elif db_type == 'MONGO':
+            if name in mongo_db.cx.list_database_names():
+                abort(400)
             db = mongo_db.cx[name]
             db.command(
                 'createUser', name, 
@@ -112,6 +122,10 @@ def create_db(user_dict=None):
                 roles=[{'role': 'dbOwner', 'db': name}]
             )
             db['default'].insert_one({})
+        new_db = Database(db_type, name, user_dict['username'])
+        with Session(deadass_db) as session:
+            session.add(new_db)
+            session.commit()
         flash(f'Your Database has been created with username "{name}" and password "{password}"!')
         return redirect('/')
     return render_template('dbform.html', form=form, commit=commit, username=user_dict['username']) 
