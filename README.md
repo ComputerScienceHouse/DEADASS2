@@ -1,4 +1,4 @@
-# DEaDASS 2 - In case you didn't learn your lesson the firs time
+# DEaDASS 2 - In case you didn't learn your lesson the first time
 
 Database Execution and Deletion Administrative Self Service
 
