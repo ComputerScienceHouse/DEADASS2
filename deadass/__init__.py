@@ -15,6 +15,8 @@ from flask_pymongo import PyMongo
 from sqlalchemy import text, create_engine
 from sqlalchemy.orm import Session
 import requests
+import random
+import secrets
 #from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 
 
@@ -85,7 +87,7 @@ def create_db(user_dict=None):
         name = form.name.data
         if not name.isalnum():
             abort(400)
-        password = get_haddock_password();
+        password = gen_password();
         if db_type == 'POSTGRES':
             with postgres_db.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
                 with connection.begin():
@@ -141,7 +143,7 @@ def reset_password(db_id, user_dict=None):
     name = db.name
     if not name.isalnum():
         abort(400)
-    password = get_haddock_password()
+    password = gen_password()
     if db.db_type == 'POSTGRES':
         with postgres_db.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
             with connection.begin():
@@ -195,7 +197,48 @@ def delete(db_id, user_dict=None):
         session.commit()
     return redirect('/')
 
-def get_haddock_password():
-    req = requests.get("https://haddock.csh.rit.edu/api/v1/haddock")
-    data = req.json()
-    return data[0]
+def gen_password():
+    #Set password creation defaults
+    lowercaseChars  = 'abcdefghijkmnopqrstuvwxyz'
+    upperchaseChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ'
+    numberChars     = '23456789'
+    specialChars    = '!@#$%^&*'
+    allChars        = lowercaseChars + upperchaseChars + numberChars + specialChars
+    length          = 18
+
+    #Shuffle charsets
+    lowercaseChars  = shuffle_chars(lowercaseChars)
+    upperchaseChars = shuffle_chars(upperchaseChars)
+    numberChars     = shuffle_chars(numberChars)
+    specialChars    = shuffle_chars(specialChars)
+    allChars        = shuffle_chars(allChars)
+
+    #Positionally define characters
+    charPositions   = 'l'*2+'u'*2+'n'*2+'s'*2+'a'*10
+    charPositions   = shuffle_chars(charPositions)
+
+    password        = ''
+    newChar         = ""
+    
+    for position in charPositions:
+        match position:
+            case 'l':
+                newChar = secrets.choice(lowercaseChars)
+            case 'u':
+                newChar = secrets.choice(upperchaseChars)       
+            case 'n':
+                newChar = secrets.choice(numberChars)           
+            case 's':
+                newChar = secrets.choice(specialChars)               
+            case 'a':
+                newChar = secrets.choice(allChars)               
+        password += newChar
+    
+    return password
+
+
+
+def shuffle_chars(string):
+    string_list = list(string)
+    random.shuffle(string_list)
+    return ''.join(string_list)
