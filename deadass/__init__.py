@@ -199,43 +199,19 @@ def delete(db_id, user_dict=None):
 
 def gen_password():
     #Set password creation defaults
-    lowercaseChars  = 'abcdefghijkmnopqrstuvwxyz'
-    upperchaseChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ'
-    numberChars     = '23456789'
-    specialChars    = '!@#$%^&*'
-    allChars        = lowercaseChars + upperchaseChars + numberChars + specialChars
+    allCharsSet  = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*'
     length          = 18
 
-    #Shuffle charsets
-    lowercaseChars  = shuffle_chars(lowercaseChars)
-    upperchaseChars = shuffle_chars(upperchaseChars)
-    numberChars     = shuffle_chars(numberChars)
-    specialChars    = shuffle_chars(specialChars)
-    allChars        = shuffle_chars(allChars)
-
-    #Positionally define characters
-    charPositions   = 'l'*2+'u'*2+'n'*2+'s'*2+'a'*10
-    charPositions   = shuffle_chars(charPositions)
+    #Shuffle charset
+    allChars        = shuffle_chars(allCharsSet)
 
     password        = ''
     newChar         = ""
     
-    for position in charPositions:
-        match position:
-            case 'l':
-                newChar = secrets.choice(lowercaseChars)
-            case 'u':
-                newChar = secrets.choice(upperchaseChars)       
-            case 'n':
-                newChar = secrets.choice(numberChars)           
-            case 's':
-                newChar = secrets.choice(specialChars)               
-            case 'a':
-                newChar = secrets.choice(allChars)               
-        password += newChar
+    while len(password) < length:
+        password += secrets.choice(allCharsSet)
     
     return password
-
 
 
 def shuffle_chars(string):
