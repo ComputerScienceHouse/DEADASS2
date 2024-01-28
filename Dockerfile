@@ -1,4 +1,4 @@
-FROM python:3.9.8-bullseye
+FROM python:3.10-bullseye
 LABEL maintainer="Joseph Abbate <josephabbateny@gmail.com>"
 
 WORKDIR /app/

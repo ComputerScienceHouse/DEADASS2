@@ -15,6 +15,8 @@ from flask_pymongo import PyMongo
 from sqlalchemy import text, create_engine
 from sqlalchemy.orm import Session
 import requests
+import random
+import secrets
 #from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 
 
@@ -85,7 +87,7 @@ def create_db(user_dict=None):
         name = form.name.data
         if not name.isalnum():
             abort(400)
-        password = get_haddock_password();
+        password = gen_password();
         if db_type == 'POSTGRES':
             with postgres_db.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
                 with connection.begin():
@@ -141,7 +143,7 @@ def reset_password(db_id, user_dict=None):
     name = db.name
     if not name.isalnum():
         abort(400)
-    password = get_haddock_password()
+    password = gen_password()
     if db.db_type == 'POSTGRES':
         with postgres_db.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
             with connection.begin():
@@ -195,7 +197,24 @@ def delete(db_id, user_dict=None):
         session.commit()
     return redirect('/')
 
-def get_haddock_password():
-    req = requests.get("https://haddock.csh.rit.edu/api/v1/haddock")
-    data = req.json()
-    return data[0]
+def gen_password():
+    #Set password creation defaults
+    allCharsSet  = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*'
+    length          = 18
+
+    #Shuffle charset
+    allChars        = shuffle_chars(allCharsSet)
+
+    password        = ''
+    newChar         = ""
+    
+    while len(password) < length:
+        password += secrets.choice(allCharsSet)
+    
+    return password
+
+
+def shuffle_chars(string):
+    string_list = list(string)
+    random.shuffle(string_list)
+    return ''.join(string_list)
