@@ -11,4 +11,5 @@ COPY ./.git /app/
 
 RUN python -m flask db upgrade; exit 0
 
-CMD [ "python", "-m" , "flask", "run", "--host=0.0.0.0", "-p", "8080"]
+CMD [ "gunicorn", "deadass:app", "--bind=0.0.0.0:8080"]
+
