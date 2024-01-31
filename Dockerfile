@@ -1,7 +1,7 @@
 FROM python:3.10-bullseye
 LABEL maintainer="Joseph Abbate <josephabbateny@gmail.com>"
 
-RUN git config --global --add safe.directory /app
+RUN git config --system --add safe.directory /app
 WORKDIR /app/
 COPY ./requirements.txt /app/
 RUN /usr/local/bin/python -m pip install --upgrade pip
