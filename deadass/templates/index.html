@@ -34,7 +34,12 @@
         {% endif %}
       {% endwith %}
       <h2 class="pb-2 borber-bottom">Your Databases</h2>
-      <p><strong>Postgres:</strong> <a href="https://wiki.csh.rit.edu/wiki/PostgreSQL"><code>postgres.csh.rit.edu</code></a>, <strong>Mongo:</strong> <a href="https://wiki.csh.rit.edu/wiki/Mongodb"><code>tide.csh.rit.edu</code></a>, <strong>mySQL:</strong> <a href="https://wiki.csh.rit.edu/wiki/Mysql"><code>mysql.csh.rit.edu</code></a></p>
+      <p>
+        <strong>Postgres:</strong> <a href="https://wiki.csh.rit.edu/wiki/PostgreSQL"><code>postgres.csh.rit.edu</code></a>,
+        <strong>Mongo:</strong> <a href="https://wiki.csh.rit.edu/wiki/Mongodb"><code>tide.csh.rit.edu</code></a>,
+        <strong>mySQL:</strong> <a href="https://wiki.csh.rit.edu/wiki/Mysql"><code>mysql.csh.rit.edu</code></a>,
+        <strong>S3:</strong> <a href="https://wiki.csh.rit.edu/wiki/S3"><code>s3.csh.rit.edu</code></a>
+      </p>
       <div class="card-deck">
       {% for db in dbs %}
         {% if loop.index0 % 3 == 0 %}
@@ -97,6 +102,69 @@
         </div>
       {% endfor %}
       </div>
+      <br>
+      <div class="card-deck">
+        {% for s3 in s3s %}
+          {% if loop.index0 % 3 == 0 %}
+        </div>
+        <br>
+        <div class="card-deck">
+          {% endif %}
+          <div class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h4 class="card-title">S3 - {{s3.name}} ({{s3.access_key}})</h4> 
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-warning btn-sm float-right" onclick='reset("{{s3.id}}")' id="reset_button_{{s3.id}}" style="margin-right:10px">Reset Password</button>
+                  <div class="modal" id="reset_{{s3.id}}">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Reset Secret Key -  {{s3.name}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to reset this Secret Key??</p>
+                        </div>
+                        <div class="modal-footer">
+                          <form action="/s3/{{s3.id}}/reset" method="post">
+                            <button class="btn btn-danger btn-sm" name="reset_s3" value="{{s3.id}}" id="s3::{{s3.id}}">Reset</button>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                          </form>
+                          <button type="button" class="btn btn-success" onclick='resetClose("{{s3.id}}")' id="s3_close_{{s3.id}}">No</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>  
+                <button type="button" class="btn btn-danger btn-sm float-right" onclick='del("{{s3.id}}")' id="delete_button_{{s3.id}}">Delete</button>
+                  <div class="modal" id="delete_{{s3.id}}">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete S3 User - {{s3.name}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete this S3 User??</p>
+                        </div>
+                        <div class="modal-footer">
+                          <form action="/s3/{{s3.id}}/delete" method="post">
+                            <button class="btn btn-danger btn-sm" name="delete_db" value="{{s3.id}}" id="s3::{{s3.id}}">Delete</button>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                          </form>
+                          <button type="button" class="btn btn-success" onclick='delClose("{{s3.id}}")' id="s3_close_{{s3.id}}">No</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
     </div>
   </div>
 </div>
