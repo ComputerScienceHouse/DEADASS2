@@ -17,7 +17,7 @@ def csh_user_auth(func):
             "first": first,
             "last": last,
             "picture": picture,
-            "admin": is_eboard or is_rtp or uid == "skyz",
+            "admin": is_eboard or is_rtp,
         }
         kwargs["auth_dict"] = auth_dict
         return func(*args, **kwargs)
