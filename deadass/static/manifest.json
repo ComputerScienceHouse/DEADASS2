@@ -1,19 +1,19 @@
 {
   "background_color": "#FFF",
-  "description": "CSH RideBoard",
+  "description": "DEaDASS2",
   "dir": "auto",
   "display": "standalone",
   "lang": "en",
-  "name": "CSH RideBoard",
+  "name": "DEaDASS2",
   "orientation": "portrait",
-  "short_name": "RideBoard",
+  "short_name": "DEaDASS2",
   "start_url": "/home",
   "theme_color": "#b0197e",
-//  "icons": [
-//    {
-//      "src": "/static/assets/favicon.ico",
-//      "sizes": "512x512",
-//      "type": "image/png"
-//    }
-//  ]
+  "icons": [
+    {
+      "src": "/static/assets/favicon.ico",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
