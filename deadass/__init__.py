@@ -11,12 +11,13 @@ from flask_pyoidc.provider_configuration import ProviderConfiguration, ClientMet
 from flask import Flask, render_template, send_from_directory, redirect, abort, flash
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy_utils import database_exists, create_database
-from flask_pymongo import PyMongo
+from flask_pymongo import MongoClient
 from sqlalchemy import text, create_engine
 from sqlalchemy.orm import Session
 import requests
 import random
 import radosgw
+import urllib
 
 # from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 
@@ -35,7 +36,7 @@ else:
 deadass_db = create_engine(app.config["DEADASS_URI"])
 postgres_db = create_engine(app.config["POSTGRES_URI"])
 mysql_db = create_engine(app.config["MYSQL_URI"])
-mongo_db = PyMongo(app)
+mongo_db = MongoClient(urllib.parse.quote_plus(app.config["MONGO_URI"]))
 rgwadmin = radosgw.connection.RadosGWAdminConnection(
     host=app.config["S3_HOST"],
     access_key=app.config["S3_ACCESS_KEY"],

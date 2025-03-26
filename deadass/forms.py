@@ -3,8 +3,13 @@
 # Author: Joe Abbate               #
 ####################################
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, SelectField, Form
-from wtforms.validators import DataRequired
+from wtforms import Form, SelectField, StringField, SubmitField, validators
+from wtforms.validators import DataRequired, StopValidation
+
+
+def is_alphanumeric(form, field):
+    if not field.data.isalnum():
+        raise StopValidation("Name must be alphanumeric")
 
 
 class DBCreate(FlaskForm):
@@ -13,7 +18,7 @@ class DBCreate(FlaskForm):
         choices=[("POSTGRES", "PostgreSQL"), ("MYSQL", "MySQL"), ("MONGO", "Mongo")],
         validators=[DataRequired()],
     )
-    name = StringField("Database Name", validators=[DataRequired()])
+    name = StringField("Database Name", validators=[DataRequired(), is_alphanumeric])
     submit = SubmitField(("Submit"), validators=[DataRequired()])
 
     def validate(self, extra_validators=None):
@@ -21,8 +26,9 @@ class DBCreate(FlaskForm):
             return False
         return True
 
+
 class S3Create(FlaskForm):
-    name = StringField("S3 Username", validators=[DataRequired()])
+    name = StringField("S3 Username", validators=[DataRequired(), is_alphanumeric])
     submit = SubmitField(("Submit"), validators=[DataRequired()])
 
     def validate(self, extra_validators=None):
